@@ -24,5 +24,8 @@ setup(name='egad',
           'scikit-image',
           'pytorch-neat @ git+https://github.com/dougsm/PyTorch-NEAT'
           ],
+      dependency_links=[
+          'https://github.com/dougsm/PyTorch-NEAT/tarball/master#egg=pytorch-neat'
+      ],
       packages=['egad'],
       )
