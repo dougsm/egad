@@ -143,13 +143,6 @@ From: ubuntu:18.04
     cd reeb_graph
     javac src/*.java
 
-    pip3 install graphviz==0.13 h5py==2.9.0 hanging-threads==2.0.3 imageio==2.5.0 JPype1==0.7.0 matplotlib==3.1.1 neat-python==0.92 networkx==2.3 \
-     opencv-python==4.1.0.25 Pillow==6.0.0 progressbar2==3.47.0 pyglet==1.4.5 Rtree==0.8.3 scikit-image==0.15.0 scikit-learn==0.21.3 \
-     scipy==1.3.0 termcolor==1.1.0 torch==1.1.0 transforms3d==0.3.1 trimesh==3.2.25 Shapely
-
-    # Install pytorch_neat from github
-    pip3 install git+git://github.com/dougsm/PyTorch-NEAT.git
-
     # Get VHACD
     cd /home/co
     wget https://github.com/kmammou/v-hacd/raw/e3acd8637397fab37423c734c6a980d7031d772f/bin/linux/testVHACD --no-check-certificate
@@ -157,18 +150,20 @@ From: ubuntu:18.04
     mv testVHACD /usr/bin/vhacd
 
     # Install EGAD
-    git clone git@github.com:dougsm/egad.git
+    cd /home/co
+    git clone https://github.com/dougsm/egad.git
     cd egad
     pip3 install -e .
 
 %environment
     TMPDIR=/tmp
 
-%apprun mapelites
+%apprun datasetgen
     if [ -z "${1:-}" ]; then
-        echo "Usage: singularity run --B <path/to/output> -B <path/to/egad>:/home/co/egad gwi.sif --app mapelites egad.sif <path/to/config_file.json> [--resume] "
+        echo "Usage: singularity run -B <path/to/output>:/output gwi.sif --app datasetgen egad.sif [args]"
+        echo "Help:  singularity run gwi.sif --app datasetgen egad.sif --help"
         exit 1
     fi
 
-    cd /home/co/egad/
-    xvfb-run python3 generate_dataset.py ${1} ${2}
+    cd /home/co/egad/scripts
+    xvfb-run python3 generate_dataset.py ${@}

@@ -7,6 +7,7 @@ python generate_dataset.py <path to config file.json> <--resume>
 
 """
 
+import argparse
 import json
 import multiprocessing as mp
 import multiprocessing.context as ctx
@@ -70,7 +71,7 @@ def pool_compare(args):
                 dexnet_return = np.random.randint(2, 102)  # Fake random number
             else:
                 # Value is encoded in the returncode from the interface script.
-                dexnet_return = subprocess.run(DN + ' ' + str(m_path.resolve()),
+                dexnet_return = subprocess.run(DN + ' ' + 'dexnet_grasp_rank_interface.py' + str(m_path.resolve()),
                     shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode
             if dexnet_return in [0, 1]:
                 return 0.0, -1, -2, []
@@ -116,7 +117,7 @@ def pool_compare(args):
         return 0.0, -1, -4, []
 
 
-def evaluate_new_meshes(mesh_pool, new_mesh_paths, cutoff, k_neighbours, config_dict):
+def evaluate_new_meshes(mesh_pool, new_mesh_paths, cutoff, k_neighbours, args):
     """
     Spawn up a multiprocessing pool to process the new workers.
     :param mesh_pool:  Current mesh pool (i.e. search space)
@@ -132,13 +133,13 @@ def evaluate_new_meshes(mesh_pool, new_mesh_paths, cutoff, k_neighbours, config_
     pool_mesh_ids = [m.idx for ms in mpvs for m in ms]
 
     l = []
-    dexnet_path = config_dict['dexnet_interface_path']
-    reeb_path = config_dict['reeb_path']
-    print('Starting processing pool with {} workers'.format(config_dict['n_processes']))
-    with mp.Pool(config_dict['n_processes'], initializer=pool_init, initargs=[dexnet_path, reeb_path]) as p:
+    dexnet_path = args.dexnetenv
+    reeb_path = args.reebpath
+    print('Starting processing pool with {} workers'.format(args.processes))
+    with mp.Pool(args.processes, initializer=pool_init, initargs=[dexnet_path, reeb_path]) as p:
         res = p.imap(pool_compare,
                      zip(new_mesh_paths, repeat(pool_mesh_paths), repeat(cutoff), repeat(k_neighbours)),
-                     chunksize=config_dict['chunk_size'])
+                     chunksize=args.chunksize)
 
         for i, r in enumerate(res):
             l.append(r)
@@ -256,18 +257,18 @@ class CPPNMesh:
 
 
 class DiversityExperiment:
-    def __init__(self, config_dict, resume=False):
-        self.config_dict = config_dict
+    def __init__(self, args):
+        self.args = args
 
-        self.DIV_THRESH = config_dict['diversity_threshold']
-        self.K_NEIGHBOURS = config_dict['diversity_neighbours']
-        self.MAX_LEN = config_dict['genomes_per_slot']
+        self.DIV_THRESH = args.divthreshold
+        self.K_NEIGHBOURS = args.neighbours
+        self.MAX_LEN = args.cellsize
 
         self._pool_last_changed = None
 
-        if resume:
+        if args.resume:
             # Attempt to find the state of the last run in order to resume.
-            p = sorted(Path(config_dict['output_dir']).glob('*'))[-1]
+            p = sorted(args.outputdir.glob('*'))[-1]
             p = sorted(p.glob('checkpoints/generation_*'))
             gen_ids = [(int(str(g).split('_')[-1]), g) for g in p]
             gen_ids.sort()
@@ -282,19 +283,17 @@ class DiversityExperiment:
             self.generation = 0
 
         # Initialise the NEAT algorithm.
-        self.inputs = cppn_neat.get_workspace(config_dict['cppn_size'], config_dict['cppn_size'], config_dict['cppn_size'])
+        self.inputs = cppn_neat.get_workspace(args.cppnsize, args.cppnsize, args.cppnsize)
         self.neat = cppn_neat.NEAT(self.inputs, checkpoint=checkpoint,
-                                   output_dir=config_dict['output_dir'],
-                                   config=config_dict['cppn_config'])
+                                   output_dir=str(args.outputdir),
+                                   config=args.cppnconfig)
 
         self.output_dir = Path(self.neat.output_dir)
         self.meshpool_dir = self.output_dir / 'pool'
         self.meshpool_dir.mkdir(parents=True, exist_ok=True)
 
-        with open(self.output_dir / 'used_config.json', 'w') as f:
-            json.dump(self.config_dict, f, indent=4)
-
-        if resume and (self.output_dir / 'sim_cache.json').exists():
+        # Try to load existing similarity cache.
+        if args.resume and (self.output_dir / 'sim_cache.json').exists():
             try:
                 with open((self.output_dir / 'sim_cache.json')) as f:
                     self.sim_cache = json.load(f)
@@ -305,7 +304,7 @@ class DiversityExperiment:
 
         self.mesh_pool = {}
 
-        if resume:
+        if args.resume:
             with open(self.output_dir / 'gen_{:04d}.json'.format(self.generation)) as f:
                 mp_ids = json.load(f)
                 print(mp_ids)
@@ -319,6 +318,12 @@ class DiversityExperiment:
             self.rerank_mesh_pool()
 
     def get_similarity(self, m1, m2):
+        """
+        Get the similarity between two meshes, either from the cache or using reeb graphs
+        :param m1:  Mesh 1
+        :param m2:  Mesh 2
+        :return:  Similarity between two meshes
+        """
         k = str((min(m1.idx, m2.idx), max(m1.idx, m2.idx)))  # make it json safe
         if k in self.sim_cache:
             return self.sim_cache[k]
@@ -333,16 +338,27 @@ class DiversityExperiment:
             return v
 
     def get_set_mesh_diversity(self, m, pool, cutoff=0.):
+        """
+        Copmare a mesh to the entire pool to compute its diversity.
+        :param m: Mesh to compare
+        :param pool: Pool to compare against
+        :param cutoff: Minimum diversity at which to stop checking (less accurate but faster).
+        :return: Diversity
+        """
         if not pool:
             m.diversity = 1.0
             return 1.0
 
         dists = []
         neighbours = []
+
+        # Iterate the pool
         for pms in pool.values():
             for pm in pms:
                 if m.idx == pm.idx:
                     continue
+
+                # Get similarity
                 try:
                     d = 1.0 - self.get_similarity(pm, m)
                 except ValueError:
@@ -350,6 +366,7 @@ class DiversityExperiment:
                     m._diversity_neighbours = set()
                     return 0.0
 
+                # Keep K_NEIGHBOURS closest neighbours
                 if len(dists) >= self.K_NEIGHBOURS:
                     if d <= dists[-1]:
                         dists[-1] = d
@@ -366,12 +383,17 @@ class DiversityExperiment:
                     neighbours.append((d, pm.idx))
                     neighbours.sort(key=lambda x: x[0])
 
+        # Compute diversity
         diversity = np.mean(dists)
         m.diversity = diversity
         m._diversity_neighbours = set([n[1] for n in neighbours])
         return diversity
 
     def rerank_mesh_pool(self):
+        """
+        Re-compute the diversity of every mesh in the pool.
+        :return: The cell with the lowest minimum diversity.
+        """
         min_div = 1.0
         min_ms = None
         for ms in self.mesh_pool.values():
@@ -449,7 +471,7 @@ class DiversityExperiment:
             print('{}: Created Successfully'.format(idx))
 
         # Evaluate the viable meshes in parallel.
-        res, pool_mesh_ids = evaluate_new_meshes(self.mesh_pool, new_mesh_paths, 0.0, self.K_NEIGHBOURS, self.config_dict)
+        res, pool_mesh_ids = evaluate_new_meshes(self.mesh_pool, new_mesh_paths, self.DIV_THRESH, self.K_NEIGHBOURS, self.args)
 
         new_meshes = []
         for (nmidx, nmp), (gidx, g), (d, nh, gd, da) in zip(new_mesh_paths, kept_genomes, res):
@@ -461,11 +483,9 @@ class DiversityExperiment:
                 k = str((min(mp_m, nmidx), max(mp_m, nmidx)))
                 self.sim_cache[k] = 1.0 - mp_sim
 
-            cutoff = self.DIV_THRESH
-
             print('Mesh: {}, Diversity: {:0.2f}'.format(nmidx, d))
 
-            if d > cutoff:
+            if d > self.DIV_THRESH:
                 nh = int(np.clip(nh-1.0, 0.0, 4.0)/4.0*25.0)
                 gd = int(np.clip(gd, 0, 99))//4
                 k = str((nh, gd))
@@ -526,12 +546,37 @@ class DiversityExperiment:
 
 def run():
     global RG
-    config_file = sys.argv[1]
-    with open(config_file) as f:
-        config_dict = json.load(f)
-    RG = ReebGraph(config_dict['reeb_path'])
-    resume = len(sys.argv) > 2 and sys.argv[2] == '--resume'
-    DiversityExperiment(config_dict, resume=resume).run()
+
+    parser = argparse.ArgumentParser(description='Generate shape dataset using CPPNs.')
+
+    # CPPN
+    parser.add_argument('--cppnsize', type=int, default=25, help='Dimension of CPPN voxel grid.')
+    parser.add_argument('--cppnconfig', type=Path, default=Path('cfg/config_cppn_voxgrids_diversity'),
+                        help='path to CPPN config file')
+
+    # MAP
+    parser.add_argument('--mapsize', type=int, default=25, help='Dimension of the search space')
+    parser.add_argument('--cellsize', type=int, default=4, help='Meshes to keep per cell')
+    parser.add_argument('--neighbours', type=int, default=10, help='Number of neighbours to compute diversity')
+    parser.add_argument('--divthreshold', type=float, default=0.0, help='Minimum threshold for object diversity')
+
+    # Multiprocessing
+    parser.add_argument('--processes', type=int, default=4, help='Number of procesing threads')
+    parser.add_argument('--chunksize', type=int, default=1, help='Number of jobs per thread at a time')
+
+    # External dependencies
+    parser.add_argument('--reebpath', type=Path, default=Path('/home/co/reeb/reeb_graph/src'), help='Path to reeb graph implementation')
+    parser.add_argument('--dexnetenv', type=str, default='python2', help='Python environment for dexnet')
+
+    # Other
+    parser.add_argument('--outputdir', type=Path, default=Path('/output'))
+    parser.add_argument('--resume', action='store_true', help='resume from last run')
+    args = parser.parse_args()
+
+    args.reebpath = str(args.reebpath.resolve())
+    RG = ReebGraph(args.reebpath)
+
+    DiversityExperiment(args).run()
 
 
 if __name__ == '__main__':
