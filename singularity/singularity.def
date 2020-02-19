@@ -1,0 +1,174 @@
+Bootstrap: docker
+From: ubuntu:18.04
+
+%files
+    /home/doug/dev/dexnet/dexnet_deployment.zip /home/co/dexnet/dexnet_deployment.zip
+    #/home/doug/dev/reeb /home/co/reeb
+    #/usr/bin/vhacd /usr/bin/vhacd
+
+%post
+    apt-get -y update && apt-get -y upgrade
+    apt-get install -y software-properties-common
+    add-apt-repository -y ppa:openscad/releases
+    apt-get -y update
+
+    DEBIAN_FRONTEND=noninteractive apt-get -y install \
+        build-essential \
+        cmake \
+        wget \
+        git \
+        nano \
+        curl \
+        vim \
+        apt-utils \
+        python-dev \
+        python-pip \
+        python3-dev \
+        python3-pip \
+        libglib2.0-0  \
+        xvfb \
+        libgl1-mesa-dev \
+        libxkbcommon-x11-0 \
+        libavcodec-dev \
+        libavformat-dev \
+        libswscale-dev \
+        qt5-default \
+        libqt5widgets5 \
+        unity-gtk-module-common \
+        unity-gtk3-module \
+        xorg \
+        libgl1-mesa-glx \
+        mesa-utils \
+        language-pack-en-base \
+        libglew-dev \
+        libcanberra-gtk-module \
+        libcanberra-gtk3-module \
+        bash \
+        gcc \
+        gfortran \
+        g++ \
+        make \
+        file \
+        unzip \
+        python-sip \
+        python-qt4 \
+        libosmesa6-dev \
+        meshlab \
+        libhdf5-dev \
+        freeglut3 \
+        freeglut3-dev \
+        openscad \
+        blender \
+        python-tk \
+        ffmpeg \
+        default-jdk \
+
+    mkdir -p /home/co
+
+    # Install libspatialindex
+    cd /home/co
+    wget https://download.osgeo.org/libspatialindex/spatialindex-src-1.7.0.tar.gz
+    tar -xzf spatialindex-src-1.7.0.tar.gz
+    cd spatialindex-src-1.7.0
+    ./configure
+    make
+    make install
+    ldconfig
+
+    # Install newest pip versions
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    python get-pip.py
+    python3 get-pip.py
+
+    pip2 install --upgrade setuptools
+    pip3 install --upgrade setuptools
+
+    # Install python2 dependencies (largely very specific to get dexnet to actually run).
+    pip2 install numpy==1.16.5 scipy==1.2.2 scikit-learn==0.20.4 scikit-image==0.14.5 opencv-python==4.1.2.30 pyassimp tensorflow==2.0.0 h5py networkx==2.2
+    pip2 install imageio==2.6.1
+    pip2 install vtk
+    pip2 install mayavi
+    pip2 install matplotlib==2.2.4 multiprocess dill cvxopt ipython==5.8.0 Pillow==6.2.1 setproctitle trimesh
+    pip2 install pyhull
+    pip2 install ffmpeg-python
+    pip2 install pathlib2
+
+    # Install Dex-Net and dependencies.
+    cd /home/co/dexnet
+    unzip dexnet_deployment.zip
+    cd deps
+
+    # install SDFGen
+    cd SDFGen
+    sh install.sh
+    cd ..
+
+    # install Boost.NumPy
+    cd Boost.NumPy
+    sh install.sh
+    cd ..
+
+    # return to dex-net directory
+
+    # install meshpy
+    cd meshpy
+    python setup.py develop
+    cd ..
+
+    # install all Berkeley AUTOLAB modules
+    # autolab_core
+    cd autolab_core
+    python setup.py develop
+    cd ..
+
+    # perception
+    cd perception
+    python setup.py develop
+    cd ..
+
+    # visualization
+    cd visualization
+    python setup.py develop
+
+    # dexnet
+    cd ..
+    cd ..
+    python setup.py develop
+
+
+    # Download reeb graphs.
+    mkdir -p /home/co/reeb
+    cd /home/co/reeb
+    git clone https://github.com/dbespalov/reeb_graph.git
+    cd reeb_graph
+    javac src/*.java
+
+    pip3 install graphviz==0.13 h5py==2.9.0 hanging-threads==2.0.3 imageio==2.5.0 JPype1==0.7.0 matplotlib==3.1.1 neat-python==0.92 networkx==2.3 \
+     opencv-python==4.1.0.25 Pillow==6.0.0 progressbar2==3.47.0 pyglet==1.4.5 Rtree==0.8.3 scikit-image==0.15.0 scikit-learn==0.21.3 \
+     scipy==1.3.0 termcolor==1.1.0 torch==1.1.0 transforms3d==0.3.1 trimesh==3.2.25 Shapely
+
+    # Install pytorch_neat from github
+    pip3 install git+git://github.com/dougsm/PyTorch-NEAT.git
+
+    # Get VHACD
+    cd /home/co
+    wget https://github.com/kmammou/v-hacd/raw/e3acd8637397fab37423c734c6a980d7031d772f/bin/linux/testVHACD --no-check-certificate
+    chmod +x testVHACD
+    mv testVHACD /usr/bin/vhacd
+
+    # Install EGAD
+    git clone git@github.com:dougsm/egad.git
+    cd egad
+    pip3 install -e .
+
+%environment
+    TMPDIR=/tmp
+
+%apprun mapelites
+    if [ -z "${1:-}" ]; then
+        echo "Usage: singularity run --B <path/to/output> -B <path/to/egad>:/home/co/egad gwi.sif --app mapelites egad.sif <path/to/config_file.json> [--resume] "
+        exit 1
+    fi
+
+    cd /home/co/egad/
+    xvfb-run python3 generate_dataset.py ${1} ${2}

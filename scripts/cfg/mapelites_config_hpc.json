@@ -1,0 +1,16 @@
+{
+    "reeb_path": "/home/co/reeb/reeb_graph/src",
+    "dexnet_interface_path": "python2 grasp_rank_interface.py",
+    "output_dir": "/mnt/storage/gwi_output/learn_map",
+    "cppn_config": "/home/root/evolution_experiments/ggcnn_gwi/gwi/cppn/config_cppn_voxgrids_diversity",
+
+    "cppn_size": 25,
+
+    "diversity_threshold": 0.0,
+    "diversity_neighbours": 10,
+    "genomes_per_slot": 4,
+
+    "n_processes": 24,
+    "chunk_size": 1
+
+}
