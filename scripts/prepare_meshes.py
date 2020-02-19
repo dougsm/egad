@@ -1,38 +1,32 @@
 import sys
-import subprocess
 from pathlib import Path
+import argparse
 
 import trimesh
+from egad.mesh import scale_mesh
 
-from gwi.cppn.mesh import scale_mesh
+parser = argparse.ArgumentParser(description='Process meshes for specific gripper.')
+parser.add_argument('width', type=float,
+                    help='Gripper width maximum. Either meters or millimeters depending on desired output.')
+parser.add_argument('path', type=str, help='Path to directory containing .obj files.')
+parser.add_argument('--stl', action='store_true', help='Output .stl rather than .obj files (useful for printing)')
+args = parser.parse_args()
 
-
-GRIPPER_WIDTH = 100  # in mm
-GRIPPER_FRAC = 1.0
+GRIPPER_WIDTH = args.width
+GRIPPER_FRAC = 0.8
 gripper_target = GRIPPER_WIDTH * GRIPPER_FRAC
 
+ip = Path(args.path)
 
-ip = Path(sys.argv[1])
 op = ip / 'processed_meshes'
 op.mkdir(exist_ok=True)
 
-
-script = Path(__file__).resolve().parent / 'resample.mlx'
-
-
 input_meshes = ip.glob('*.obj')
-
 
 for im in input_meshes:
     oname = op/im.name
-    subprocess.run([
-        'meshlabserver',
-        '-i', im,
-        '-o', oname,
-        '-s', script
-    ])
 
-    m = trimesh.load(oname)
+    m = trimesh.load(im)
     exts = m.bounding_box_oriented.primitive.extents
 
     max_dim = max(list(exts))
@@ -46,6 +40,8 @@ for im in input_meshes:
         scale = gripper_target / min_dim
         scale_mesh(m, scale)
 
-    m.export(oname)
-    # m.export(oname.with_suffix('.stl'))
+    if args.stl:
+        oname = oname.with_suffix('.stl')
 
+    print(oname)
+    m.export(oname)
