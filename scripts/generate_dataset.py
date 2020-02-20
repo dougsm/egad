@@ -1,12 +1,3 @@
-"""
-Generate the EGAD dataset using CPPN-NEAT.
-
-Usage:
-
-python generate_dataset.py <path to config file.json> <--resume>
-
-"""
-
 import argparse
 import json
 import multiprocessing as mp
