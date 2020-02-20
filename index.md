@@ -98,4 +98,4 @@ Please see the [master branch](https://github.com/dougsm/egad/) for instructions
 
 #### Research Supported By
 
-[![acrv_logo.png](images/acrv_logo.png "acrv_logo")](https://https://www.roboticvision.org/) [![qut_logo.png](images/qut_logo.png "qut_logo")](https://www.qut.edu.au/)
+[![acrv_logo.png](images/acrv_logo.png "acrv_logo")](https://www.roboticvision.org/) [![qut_logo.png](images/qut_logo.png "qut_logo")](https://www.qut.edu.au/)
