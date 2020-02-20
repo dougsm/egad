@@ -84,7 +84,7 @@ Grasping experiments performed using Franka-Emika Panda robot and [GG-CNN](https
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/fae8f5KqiQs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Evoluation of EGAD over 2000 generations of the MAP-Elites algorithm:
+Evolution of EGAD over 2000 generations of the MAP-Elites algorithm:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/X42A3Qjy8E4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
