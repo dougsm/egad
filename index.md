@@ -4,21 +4,23 @@ title:  EGAD
 description: an Evolved Grasping Analysis Dataset for diversity and reproducibility in robotic manipulation
 ---
 
-*[Doug Morrison](dougsm.com), [Peter Corke](petercorke.com) and [Juxi Leitner](juxi.net)*
+*[Doug Morrison](https://dougsm.com), [Peter Corke](http://petercorke.com) and [Juxi Leitner](http://juxi.net)*
 
 Under Review for RA-L and IROS 2020.
 
 Preprint: Coming Soon
 
+Code: [https://github.com/dougsm/egad/](https://github.com/dougsm/egad/)
+
 ---
+
+![fig-hero](images/fig_hero.png)
 
 EGAD is a dataset of over 2000 geometrically object meshes created with robotic grasping and manipulation in mind.
 
 Diverse and extensive training data are critical to training modern robotic systems to grasp, and yet many systems are training on limited and non-diverse datasets repurposed from other domains.  We used evoluationary algorithms to create a set of objects which uniformly span the object space of simple to complex,
 and easy to difficult to grasp, with a focus on geometric diversity.  The objects are all easily 3D-printable, making 1:1 sim-to-real transfer possible.  
 Additionally, we specify an evaluation set of 49 diverse objects with a gradient of difficulty which can be used to evaluate robotic grasping systems in the real world.   
-
-![fig-hero](images/fig_hero.png)
 
 ---
 
@@ -46,11 +48,15 @@ A00\_[0-3].obj corresponds to the simplest,
 easiest to grasp cell in the search space, and Y25\_[0-3].obj corresponds to the most complex, most difficult to grasp cell.
 (NB: The highest filled cell is X25)
 
+### Scaling Objects and 3D Printing
+
+We provide a [script and instructions here](https://github.com/dougsm/egad/) for scaling the objects to a specific gripper size.
+
 ---
 
 ## Dex-Net Compatible Data
 
-We also provide a databas of objects in the Dex-Net HDF5 database format. 
+We also provide a database of objects in the Dex-Net HDF5 format. 
 This file can be accessed and manipulated using the Dex-Net command line tool, the extensive documentation for which can be found [here](https://berkeleyautomation.github.io/dex-net/code.html).
 Using the Dex-Net API, you can sample and rank grasps on the objects using a wide variety of grippers and quality metrics, and additionally export data for training visual grasp detection algorithms.
 
@@ -74,6 +80,22 @@ Click the images below to access high-resolution versions of the dataset compari
 
 ## Videos
 
+Grasping experiments performed using Franka-Emika Panda robot and [GG-CNN](https://github.com/dougsm/mvp_grasp/) (10x speedup):
+
 <iframe width="560" height="315" src="https://www.youtube.com/embed/fae8f5KqiQs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+Evoluation of EGAD over 2000 generations of the MAP-Elites algorithm:
+
 <iframe width="560" height="315" src="https://www.youtube.com/embed/X42A3Qjy8E4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+---
+
+## Code
+
+Please see the [master branch](https://github.com/dougsm/egad/) for instructions on running the code.
+
+---
+
+#### Research Supported By
+
+[![acrv_logo.png](images/acrv_logo.png "acrv_logo")](https://https://www.roboticvision.org/) [![qut_logo.png](images/qut_logo.png "qut_logo")](https://www.qut.edu.au/)
