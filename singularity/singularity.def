@@ -1,11 +1,6 @@
 Bootstrap: docker
 From: ubuntu:18.04
 
-%files
-    /home/doug/dev/dexnet/dexnet_deployment.zip /home/co/dexnet/dexnet_deployment.zip
-    #/home/doug/dev/reeb /home/co/reeb
-    #/usr/bin/vhacd /usr/bin/vhacd
-
 %post
     apt-get -y update && apt-get -y upgrade
     apt-get install -y software-properties-common
@@ -94,8 +89,11 @@ From: ubuntu:18.04
     pip2 install pathlib2
 
     # Install Dex-Net and dependencies.
+    mkdir -p /home/co/dexnet
     cd /home/co/dexnet
+    wget https://github.com/dougsm/egad/releases/download/v0.1/dexnet_deployment.zip --no-check-certificate
     unzip dexnet_deployment.zip
+
     cd deps
 
     # install SDFGen
