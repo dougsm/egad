@@ -422,14 +422,22 @@ class DiversityExperiment:
         with open(self.output_dir / 'sim_cache.json', 'w') as f:
             json.dump(self.sim_cache, f)
 
-    def evaluate_genomes(self, genomes, config):
-        """
-        Callback for python-neat.
-        Process a population of CPPNs.
-        """
+    def _process_voxgrid(self, voxgrid):
+        # Fill high-frequency holes
+        voxgrid = fill_orthographic(voxgrid)
+        voxgrid = binary_opening(voxgrid)
+        mesh = voxel_to_mesh(voxgrid)
+        smooth_mesh(mesh)
+        mesh = scale_mesh(mesh, 1 / 250)  # Rescale to 0.1m
+        # Min size.
+        max_dim = max(list(mesh.bounding_box.primitive.extents))
+        scale = 0.1 / max_dim
+        scale_mesh(mesh, scale)
+        return mesh
+
+    def _genomes_to_meshes(self, config, genomes):
         new_mesh_paths = []
         kept_genomes = []
-
         # Process the individual genomes
         for gidx, g in genomes:
             idx = '{:04d}_{:04d}'.format(self.generation, gidx)
@@ -443,19 +451,7 @@ class DiversityExperiment:
 
             # Pre-process the mesh.
             try:
-                # Fill high-frequency holes
-                voxgrid = fill_orthographic(voxgrid)
-                voxgrid = binary_opening(voxgrid)
-
-                mesh = voxel_to_mesh(voxgrid)
-                smooth_mesh(mesh)
-                mesh = scale_mesh(mesh, 1/250)  # Rescale to 0.1m
-
-                # Min size.
-                max_dim = max(list(mesh.bounding_box.primitive.extents))
-                scale = 0.1/max_dim
-                scale_mesh(mesh, scale)
-
+                mesh = self._process_voxgrid(voxgrid)
             except:
                 print('{}: Ignored, exception occured'.format(idx))
                 g.fitness = 0.0
@@ -469,40 +465,53 @@ class DiversityExperiment:
             kept_genomes.append((gidx, g))
 
             print('{}: Created Successfully'.format(idx))
+        return kept_genomes, new_mesh_paths
 
-        # Evaluate the viable meshes in parallel.
-        res, pool_mesh_ids = evaluate_new_meshes(self.mesh_pool, new_mesh_paths, self.DIV_THRESH, self.K_NEIGHBOURS, self.args)
-
+    def _update_pool_new_meshes(self, kept_genomes, new_mesh_paths, pool_mesh_ids, res):
         new_meshes = []
-        for (nmidx, nmp), (gidx, g), (d, nh, gd, da) in zip(new_mesh_paths, kept_genomes, res):
+        for (nmidx, nmp), (gidx, g), (diversity, complexity, difficulty, similarities) in zip(new_mesh_paths,
+                                                                                              kept_genomes, res):
             m = CPPNMesh(self.meshpool_dir, nmidx, genome=g, genome_idx=gidx)
-            m.diversity = d
-            g.fitness = d
+            m.diversity = diversity
+            g.fitness = diversity
 
-            for mp_m, mp_sim in zip(pool_mesh_ids, da):
+            # Update the cache with results from each new mesh.
+            for mp_m, mp_sim in zip(pool_mesh_ids, similarities):
                 k = str((min(mp_m, nmidx), max(mp_m, nmidx)))
                 self.sim_cache[k] = 1.0 - mp_sim
 
-            print('Mesh: {}, Diversity: {:0.2f}'.format(nmidx, d))
+            print('Mesh: {}, Diversity: {:0.2f}'.format(nmidx, diversity))
 
-            if d > self.DIV_THRESH:
-                nh = int(np.clip(nh-1.0, 0.0, 4.0)/4.0*25.0)
-                gd = int(np.clip(gd, 0, 99))//4
-                k = str((nh, gd))
+            # Find cell in the map and add if possible.
+            if diversity > self.DIV_THRESH:
+                complexity = int(np.clip(complexity - 1.0, 0.0, 4.0 - 1e-6) / 4.0 * self.args.complexitydims)
+                difficulty = int(np.clip(difficulty, 0, 99) / 100 * self.args.difficultydims)
+                k = str((complexity, difficulty))
                 if k not in self.mesh_pool:
                     self.mesh_pool[k] = [m]
                     new_meshes.append(m)
-                elif d >= self.mesh_pool[k][-1].diversity:
+                elif diversity >= self.mesh_pool[k][-1].diversity:
                     self.mesh_pool[k].append(m)
                     self.mesh_pool[k].sort(reverse=True)
                     new_meshes.append(m)
-
         if new_meshes:
             new_meshes.sort(reverse=True)
             print('Max Diversity New: {:0.2f}'.format(new_meshes[0].diversity))
             print('Min Diversity New: {:0.2f}'.format(new_meshes[-1].diversity))
             print('            N New: {:d}'.format(len(new_meshes)))
 
+    def evaluate_genomes(self, genomes, config):
+        """
+        Callback for python-neat.
+        Process a population of CPPNs.
+        """
+        kept_genomes, new_mesh_paths = self._genomes_to_meshes(config, genomes)
+
+        # Evaluate the viable meshes in parallel.
+        res, pool_mesh_ids = evaluate_new_meshes(self.mesh_pool, new_mesh_paths, self.DIV_THRESH, self.K_NEIGHBOURS, self.args)
+
+        # Add new meshes to the pool
+        self._update_pool_new_meshes(kept_genomes, new_mesh_paths, pool_mesh_ids, res)
 
         print('Re-ranking Mesh Pool')
         self._pool_last_changed = None
@@ -511,7 +520,6 @@ class DiversityExperiment:
             self._pool_last_changed = ms.pop(-1).idx
             ms = self.rerank_mesh_pool()
 
-        # Print some stats
         all_flat = sorted([m.diversity for ms in self.mesh_pool.values() for m in ms], reverse=True)
         print('Max Diversity Pool: {:0.2f}'.format(all_flat[0]))
         print('Min Diversity Pool: {:0.2f}'.format(all_flat[-1]))
@@ -556,6 +564,8 @@ def run():
 
     # MAP
     parser.add_argument('--mapsize', type=int, default=25, help='Dimension of the search space')
+    parser.add_argument('--complexitydims', type=int, default=25, help='Number of cells in complexity dimension')
+    parser.add_argument('--difficultydims', type=int, default=25, help='Number of cells in difficulty dimension')
     parser.add_argument('--cellsize', type=int, default=4, help='Meshes to keep per cell')
     parser.add_argument('--neighbours', type=int, default=10, help='Number of neighbours to compute diversity')
     parser.add_argument('--divthreshold', type=float, default=0.0, help='Minimum threshold for object diversity')

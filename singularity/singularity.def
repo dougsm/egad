@@ -159,11 +159,5 @@ From: ubuntu:18.04
     TMPDIR=/tmp
 
 %apprun datasetgen
-    if [ -z "${1:-}" ]; then
-        echo "Usage: singularity run -B <path/to/output>:/output gwi.sif --app datasetgen egad.sif [args]"
-        echo "Help:  singularity run gwi.sif --app datasetgen egad.sif --help"
-        exit 1
-    fi
-
     cd /home/co/egad/scripts
     xvfb-run python3 generate_dataset.py ${@}

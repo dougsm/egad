@@ -1,10 +1,11 @@
 import jpype
 import jpype.imports
 
+import os
 import subprocess
-import numpy as np
-
 from pathlib import Path
+
+import numpy as np
 
 
 class ReebGraph:
@@ -31,12 +32,17 @@ class ReebGraph:
 
         # Set defaults
         self.params = ['4000', '0.005', str(2 ** 7), '0.5']
+
+        # the reeb project tries to save a file in the working directory -> redirect to tmp briefly
+        wd = Path.cwd()
+        os.chdir('/tmp')
         self.erg.main(self.params[:3])
         self.crg.main(self.params)
         try:
             (Path.cwd() / 'log_{}_{}_{}_{}'.format(*self.params)).unlink()
         except FileNotFoundError:
             pass
+        os.chdir(str(wd))
 
     def extract_reeb_graph(self, mesh_file):
         """
