@@ -71,8 +71,9 @@ def pool_compare(args):
                 dexnet_return = np.random.randint(2, 102)  # Fake random number
             else:
                 # Value is encoded in the returncode from the interface script.
-                dexnet_return = subprocess.run(DN + ' ' + 'dexnet_grasp_rank_interface.py' + str(m_path.resolve()),
+                dexnet_return = subprocess.run(DN + ' dexnet_grasp_rank_interface.py ' + str(m_path.resolve()),
                     shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode
+                print(dexnet_return)
             if dexnet_return in [0, 1]:
                 return 0.0, -1, -2, []
             dexnet_return -= 2  # Shifted up by 2 to avoid overlap with exit 1 which is a legit error
@@ -291,6 +292,8 @@ class DiversityExperiment:
         self.output_dir = Path(self.neat.output_dir)
         self.meshpool_dir = self.output_dir / 'pool'
         self.meshpool_dir.mkdir(parents=True, exist_ok=True)
+        self.div_output_dir = self.output_dir / 'diversity'
+        self.div_output_dir.mkdir(parents=True, exist_ok=True)
 
         # Try to load existing similarity cache.
         if args.resume and (self.output_dir / 'sim_cache.json').exists():
@@ -532,7 +535,7 @@ class DiversityExperiment:
 
         print('Saving Diversities')
         mesh_diversities = {m.idx: m.diversity for ms in self.mesh_pool.values() for m in ms}
-        with open(self.output_dir / 'gen_div_{:04d}.json'.format(self.generation), 'w') as f:
+        with open(self.div_output_dir / 'gen_div_{:04d}.json'.format(self.generation), 'w') as f:
             json.dump(mesh_diversities, f)
 
         print('Saving Similarity Cache')

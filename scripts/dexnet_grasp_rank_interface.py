@@ -35,7 +35,7 @@ obj = GraspableObject3D(mesh_processor.sdf, mesh_processor.mesh)
 
 grasps = sampler.generate_grasps(obj, max_iter=config['max_grasp_sampling_iters'])
 
-metric_config = GraspQualityConfigFactory.create_config(config['metrics']['robust_ferrari_canny'])
+metric_config = GraspQualityConfigFactory.create_config(config['metrics']['ferrari_canny'])
 quality_fn = GraspQualityFunctionFactory.create_quality_function(obj, metric_config)
 
 qualities = [quality_fn(g).quality for g in grasps]
