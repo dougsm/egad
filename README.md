@@ -7,7 +7,7 @@ See [Project Website](https://dougsm.github.io/egad/) for overview.
 This code was developed on Ubuntu 18.04 with Python 3.7.4.
 
 ```shell script
-git clone git@github.com:dougsm/egad.git
+git clone https://github.com/dougsm/egad.git 
 cd egad
 pip3 install -e .
 ```
@@ -66,7 +66,7 @@ This code has been run and tested with Singularity 3.5.
 **2. Clone this repo**
 
 ```shell script
-git clone git@github.com:dougsm/egad.git
+git clone https://github.com/dougsm/egad.git
 cd egad
 pip3 install -e .
 ```
@@ -79,6 +79,8 @@ sudo singularity build egad.sif singularity.def
 
 # You can test that the compile worked by running a shell inside the container.
 singularity run egad.sif
+
+exit with ctrl+D
 ```
 
 Once built, the container can be deployed on any other machine running Singularity, e.g. a HPC cluster.
