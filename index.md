@@ -8,7 +8,7 @@ description: an Evolved Grasping Analysis Dataset for diversity and reproducibil
 
 Under Review for RA-L and IROS 2020.
 
-Preprint: Coming Soon
+Preprint: [https://arxiv.org/abs/2003.01314](https://arxiv.org/abs/2003.01314)
 
 Code: [https://github.com/dougsm/egad/](https://github.com/dougsm/egad/)
 
@@ -16,11 +16,12 @@ Code: [https://github.com/dougsm/egad/](https://github.com/dougsm/egad/)
 
 ![fig-hero](images/fig_hero.png)
 
-EGAD is a dataset of over 2000 geometrically object meshes created with robotic grasping and manipulation in mind.
+EGAD is a dataset of over 2000 geometrically diverse object meshes created specifically with robotic grasping and manipulation in mind (above left).
 
-Diverse and extensive training data are critical to training modern robotic systems to grasp, and yet many systems are training on limited and non-diverse datasets repurposed from other domains.  We used evoluationary algorithms to create a set of objects which uniformly span the object space of simple to complex,
+Diverse and extensive training data are critical to training modern robotic systems to grasp, and yet many systems are trained on small or non-diverse datasets repurposed from other domains.  We used evoluationary algorithms to create a set of objects which uniformly span the object space of simple to complex,
 and easy to difficult to grasp, with a focus on geometric diversity.  The objects are all easily 3D-printable, making 1:1 sim-to-real transfer possible.  
-Additionally, we specify an evaluation set of 49 diverse objects with a gradient of difficulty which can be used to evaluate robotic grasping systems in the real world.   
+
+We specify an evaluation set of 49 diverse objects with a gradient of complexity and difficulty which can be used to evaluate robotic grasping systems in the real world (above right).   
 
 ---
 
@@ -71,7 +72,9 @@ The database contains pre-computed antipodal grasps annotated with robust Ferrar
 
 ## Visualisation
 
-Click the images below to access high-resolution versions of the dataset comparisons in the paper.
+The figures below compare the EGAD dataset to the popular Dex-Net and YCB object datasets in the space of simple to complex (left to right) and easy to difficult to grasp (bottom to top).  Compared to these datsets, EGAD has much higher coverage of the object space as well as higher inter-object geometric diversity.  See [the paper](https://arxiv.org/abs/2003.01314) for more details.
+
+Click the images below to access high-resolution versions of the images.
 
 [![egad-dataset](images/egad_thumb.png "egad")](images/egad.png) [![dexnet2-dataset](images/dexnet_thumb.png "dexnet2")](images/dexnet.png) [![egad-dataset](images/ycb_thumb.png "title-1")](images/ycb.png)   
 
@@ -80,11 +83,11 @@ Click the images below to access high-resolution versions of the dataset compari
 
 ## Videos
 
-Grasping experiments performed using Franka-Emika Panda robot and [GG-CNN](https://github.com/dougsm/mvp_grasp/) (10x speedup):
+Grasping experiments performed using Franka-Emika Panda robot and [GG-CNN](https://github.com/dougsm/mvp_grasp/) (10x speedup).  We performed 20 grasp attempts on each of the evaluation objects, which allow us to perform an in-depth analysis of the strenghts and limitations of GG-CNN.  See [the paper](https://arxiv.org/abs/2003.01314) for more details.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/fae8f5KqiQs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Evolution of EGAD over 2000 generations of the MAP-Elites algorithm:
+EGAD is generated using evolutionary algorithms, where we uniformly fill the search space of objects across complexity and difficulty. This video shows the progress of the dataset creation over 200,000 evolutionary steps.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/X42A3Qjy8E4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
