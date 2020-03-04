@@ -93,9 +93,9 @@ EGAD is generated using evolutionary algorithms, where we uniformly fill the sea
 
 ---
 
-## Code
+## Dataset Creation
 
-Please see the [master branch](https://github.com/dougsm/egad/) for instructions on running the code.
+Please see the [master branch](https://github.com/dougsm/egad/) for instructions on running the code for generating an Evolved dataset of objects.  We provide a Singularity container to easy deployment and reproduction.  
 
 ---
 
