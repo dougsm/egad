@@ -1,8 +1,12 @@
-# EGAD
+# EGAD!
 
-See [Project Website](https://dougsm.github.io/egad/) for overview.
+EGAD! an Evolved Grasping Analysis Dataset for diversity and reproducibility in robotic manipulation
 
-## Installing
+See [Project Website](https://dougsm.github.io/egad/) for overview and multimedia material.
+
+[arXiv Paper](https://arxiv.org/abs/2003.01314)
+
+## Installing as a Library
 
 This code was developed on Ubuntu 18.04 with Python 3.7.4.
 
@@ -80,7 +84,7 @@ sudo singularity build egad.sif singularity.def
 # You can test that the compile worked by running a shell inside the container.
 singularity run egad.sif
 
-exit with ctrl+D
+# exit with ctrl+D
 ```
 
 Once built, the container can be deployed on any other machine running Singularity, e.g. a HPC cluster.
@@ -198,3 +202,16 @@ singularity run -B /path/to/local/output/directory:/output -B /home/user/dev/ega
 # e.g. to overwrite a single file (scripts/generate_dataset.py in this case)
 singularity run -B /path/to/local/output/directory:/output -B /home/user/dev/egad/scripts/generate_dataset.py:/home/co/egad/scripts/generate_dataset.py --app datasetgen egad.sif
 ```
+
+---
+
+## References and Acknowledgements
+
+This project wouldn't have been possible without the following projects:
+
+- Dex-Net: [https://github.com/BerkeleyAutomation/dex-net](https://github.com/BerkeleyAutomation/dex-net)
+- Reeb Graphs: [https://github.com/dbespalov/reeb_graph](https://github.com/dbespalov/reeb_graph)
+- NEAT-Python: [https://neat-python.readthedocs.io/en/latest/](https://neat-python.readthedocs.io/en/latest/)
+- PyTorch-NEAT: [https://github.com/dougsm/PyTorch-NEAT](https://github.com/dougsm/PyTorch-NEAT), originally [https://github.com/uber-research/PyTorch-NEAT](https://github.com/uber-research/PyTorch-NEAT)
+- Trimesh: [https://trimsh.org/index.html](https://trimsh.org/index.html)
+- V-HACD: [https://github.com/kmammou/v-hacd](https://github.com/kmammou/v-hacd)
