@@ -99,6 +99,20 @@ Please see the [master branch](https://github.com/dougsm/egad/) for instructions
 
 ---
 
-#### Research Supported By
+## Research Supported By
 
-[![acrv_logo.png](images/acrv_logo.png "acrv_logo")](https://www.roboticvision.org/) [![qut_logo.png](images/qut_logo.png "qut_logo")](https://www.qut.edu.au/)
+[![acrv_logo.png](images/acrv_logo.png "acrv_logo")](https://www.roboticvision.org/)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![qut_logo.png](images/qut_logo.png "qut_logo")](https://www.qut.edu.au/)
+
+
+---
+
+## References and Acknowledgements
+
+This project wouldn't have been possible without the following libraries:
+
+- Dex-Net: [https://github.com/BerkeleyAutomation/dex-net](https://github.com/BerkeleyAutomation/dex-net)
+- Reeb Graphs: [https://github.com/dbespalov/reeb_graph](https://github.com/dbespalov/reeb_graph)
+- NEAT-Python: [https://neat-python.readthedocs.io/en/latest/](https://neat-python.readthedocs.io/en/latest/)
+- PyTorch-NEAT: [https://github.com/dougsm/PyTorch-NEAT](https://github.com/dougsm/PyTorch-NEAT), originally [https://github.com/uber-research/PyTorch-NEAT](https://github.com/uber-research/PyTorch-NEAT)
+- Trimesh: [https://trimsh.org/index.html](https://trimsh.org/index.html)
+- V-HACD: [https://github.com/kmammou/v-hacd](https://github.com/kmammou/v-hacd)
