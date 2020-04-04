@@ -61,7 +61,7 @@ We also provide a database of objects in the Dex-Net HDF5 format.
 This file can be accessed and manipulated using the Dex-Net command line tool, the extensive documentation for which can be found [here](https://berkeleyautomation.github.io/dex-net/code.html).
 Using the Dex-Net API, you can sample and rank grasps on the objects using a wide variety of grippers and quality metrics, and additionally export data for training visual grasp detection algorithms.
 
-Download Link:  [egad.hdf5 (*19GB*)](http://s.dougsm.com/egad/egad_040220.hdf5)
+Download Link:  [egad.hdf5 (*19GB*)](http://s.dougsm.com/egad/egad_310320.hdf5)
 
 The database contains pre-computed antipodal grasps annotated with robust Ferrari Canny quality metrics for all objects in EGAD.
 
