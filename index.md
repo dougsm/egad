@@ -27,9 +27,9 @@ We specify an evaluation set of 49 diverse objects with a gradient of complexity
 
 ## Object Model Download
 
-Training Object Model Set (2282 .obj models): [egad_train_set.zip (260MB)](http://s.dougsm.com/egad/egad_train_set.zip)
+Training Object Model Set (2282 .obj models): [egad_train_set.zip (260MB)](https://data.researchdatafinder.qut.edu.au/dataset/egad---evolved/resource/2b581c49-17f0-4941-8f8f-ffd4871c1117)
 
-Evaluation Object Model Set (49 .obj models):  [egad_eval_set.zip (6MB)](http://s.dougsm.com/egad/egad_eval_set.zip)
+Evaluation Object Model Set (49 .obj models):  [egad_eval_set.zip (6MB)](https://data.researchdatafinder.qut.edu.au/dataset/egad---evolved/resource/f01c0b75-aa6d-4af9-b2a9-5edfee823e03)
 
 For viewing and manipulating object meshes, we recommend [meshlab](http://www.meshlab.net/) or the [trimesh python library](https://trimsh.org/index.html).
 
@@ -61,7 +61,7 @@ We also provide a database of objects in the Dex-Net HDF5 format.
 This file can be accessed and manipulated using the Dex-Net command line tool, the extensive documentation for which can be found [here](https://berkeleyautomation.github.io/dex-net/code.html).
 Using the Dex-Net API, you can sample and rank grasps on the objects using a wide variety of grippers and quality metrics, and additionally export data for training visual grasp detection algorithms.
 
-Download Link:  [egad.hdf5 (*19GB*)](http://s.dougsm.com/egad/egad_310320.hdf5)
+Download Link:  [egad.hdf5 (*19GB*)](https://data.researchdatafinder.qut.edu.au/dataset/egad---evolved/resource/a29c1e0d-c64f-4aa1-b9cd-bd8034194ac3)
 
 The database contains pre-computed antipodal grasps annotated with robust Ferrari Canny quality metrics for all objects in EGAD.
 
