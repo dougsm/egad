@@ -2,9 +2,12 @@
 
 EGAD! an Evolved Grasping Analysis Dataset for diversity and reproducibility in robotic manipulation
 
-See [Project Website](https://dougsm.github.io/egad/) for overview and multimedia material.
+Accepted to IEEE RA-L, April 2020.  [[arXiv preprint](https://arxiv.org/abs/2003.01314)]
 
-[arXiv Paper](https://arxiv.org/abs/2003.01314)
+## Dataset Download
+
+See the [Project Website](https://dougsm.github.io/egad/) for overview, dataset download and multimedia material.
+
 
 ## Installing as a Library
 
