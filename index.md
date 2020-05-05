@@ -6,7 +6,7 @@ description: an Evolved Grasping Analysis Dataset for diversity and reproducibil
 
 *[Doug Morrison](https://dougsm.com), [Peter Corke](http://petercorke.com) and [Juxi Leitner](http://juxi.net)*
 
-Under Review for RA-L and IROS 2020.
+IEEE Robotics and Automation Letters (RA-L), accepted April 2020.
 
 Preprint: [https://arxiv.org/abs/2003.01314](https://arxiv.org/abs/2003.01314)
 
