@@ -10,7 +10,7 @@ IEEE Robotics and Automation Letters (RA-L), accepted April 2020.
 
 Preprint: [https://arxiv.org/abs/2003.01314](https://arxiv.org/abs/2003.01314)
 
-IEEE Xplore [https://ieeexplore.ieee.org/document/9085936/](https://ieeexplore.ieee.org/document/9085936/)
+IEEE Xplore: [https://ieeexplore.ieee.org/document/9085936/](https://ieeexplore.ieee.org/document/9085936/)
 
 Code: [https://github.com/dougsm/egad/](https://github.com/dougsm/egad/)
 
