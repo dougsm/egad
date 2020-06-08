@@ -10,6 +10,8 @@ IEEE Robotics and Automation Letters (RA-L), accepted April 2020.
 
 Preprint: [https://arxiv.org/abs/2003.01314](https://arxiv.org/abs/2003.01314)
 
+IEEE Xplore [https://ieeexplore.ieee.org/document/9085936/](https://ieeexplore.ieee.org/document/9085936/)
+
 Code: [https://github.com/dougsm/egad/](https://github.com/dougsm/egad/)
 
 ---
@@ -96,6 +98,24 @@ EGAD is generated using evolutionary algorithms, where we uniformly fill the sea
 ## Dataset Creation
 
 Please see the [master branch](https://github.com/dougsm/egad/) for instructions on running the code for generating an Evolved dataset of objects.  We provide a Singularity container to easy deployment and reproduction.  
+
+---
+
+## Citation
+
+If you use this work, please cite:
+
+```
+@article{morrison2020egad,
+  author={D. {Morrison} and P. {Corke} and J. {Leitner}},
+  journal={IEEE Robotics and Automation Letters}, 
+  title={EGAD! An Evolved Grasping Analysis Dataset for Diversity and Reproducibility in Robotic Manipulation}, 
+  year={2020},
+  volume={5},
+  number={3},
+  pages={4368-4375}
+}
+```
 
 ---
 
