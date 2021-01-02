@@ -79,14 +79,15 @@ From: ubuntu:18.04
     pip3 install --upgrade setuptools
 
     # Install python2 dependencies (largely very specific to get dexnet to actually run).
-    pip2 install numpy==1.16.5 scipy==1.2.2 scikit-learn==0.20.4 scikit-image==0.14.5 opencv-python==4.1.2.30 pyassimp tensorflow==2.0.0 h5py networkx==2.2
+    pip2 install numpy==1.16.5 scipy==1.2.2 scikit-learn==0.20.4 scikit-image==0.14.5 opencv-python==4.1.2.30 pyassimp tensorflow==2.0.0 h5py networkx==2.2 tornado==3.2
     pip2 install imageio==2.6.1
     pip2 install vtk
-    pip2 install mayavi
+    pip2 install traitsui==6.1.3 pyface==6.1.2 mayavi==4.5.0
     pip2 install matplotlib==2.2.4 multiprocess dill cvxopt ipython==5.8.0 Pillow==6.2.1 setproctitle trimesh
     pip2 install pyhull
     pip2 install ffmpeg-python
-    pip2 install pathlib2
+    pip2 install pathlib2 pathlib
+    pip2 install joblib==0.13.1 matplotlib==2.2.0 ruamel.yaml==0.16.0
 
     # Install Dex-Net and dependencies.
     mkdir -p /home/co/dexnet
